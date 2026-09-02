@@ -16,6 +16,7 @@ main=do
         let path=inputdir </> name
         readFile' path 
         ) nameFiles
+    let xs=map scanToken contentFiles   
       
          
     

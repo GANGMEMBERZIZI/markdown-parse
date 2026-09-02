@@ -1,9 +1,11 @@
 module Types where
-type nameFiles=[String]
-type contentFiles=String
+type NameFiles=[String]
+type ContentFiles=String
 data Token=
-    HeadingStart
+    HeadingOne
     | Text String
-    | StrongStart
-    | StrongEnd
-type html=String 
+    | Space
+    | Strong
+    | BlankLine
+  deriving (Show)   
+type Html=String 
