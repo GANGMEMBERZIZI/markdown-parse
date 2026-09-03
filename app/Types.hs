@@ -1,4 +1,5 @@
 module Types where
+type Name=String
 type NameFiles=[String]
 type ContentFiles=String
 data Token=
