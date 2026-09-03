@@ -1,6 +1,6 @@
 module Scan where
 import Types    
-scanToken::String->[Token]
+scanToken::ContentFiles->[Token]
 scanToken []=[]
 scanToken ('\n':'\n':rest)=BlankLine:scanToken rest
 scanToken ('*':'*':rest)=Strong:scanToken rest
