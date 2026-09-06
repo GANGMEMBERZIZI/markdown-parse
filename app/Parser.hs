@@ -3,18 +3,62 @@ import Types
 blockCut::[Token]->[[Token]]
 blockCut []=[]
 blockCut (BlankLine:rest)=blockCut rest
-blockCut token=    
-   let (xs,rest)=span process token
-   in xs : blockCut rest
-   where process=(/=BlankLine)
+blockCut (HeadingOne:Space:rest)=
+   let (xs,remain)=span (/= NewLine) rest
+   in (HeadingOne:Space:xs):blockCut (dropNewLine remain)
+blockCut (HeadingTwo:Space:rest)=
+   let (xs,remain)=span (/=NewLine) rest
+   in (HeadingTwo:Space:xs):blockCut (dropNewLine remain)
+blockCut (HeadingThree:Space:rest)=
+   let (xs,remain)=span (/=NewLine) rest
+   in (HeadingThree:Space:xs):blockCut (dropNewLine remain)
+blockCut (HeadingFour:Space:rest)=
+   let (xs,remain)=span (/=NewLine) rest
+   in (HeadingFour:Space:xs):blockCut (dropNewLine remain)
+blockCut (HeadingFive:Space:rest)=
+   let (xs,remain)=span (/=NewLine) rest
+   in (HeadingFive:Space:xs):blockCut (dropNewLine remain)
+blockCut (HeadingSix:Space:rest)=
+   let (xs,remain)=span (/=NewLine) rest
+   in (HeadingSix:Space:xs):blockCut (dropNewLine remain)
+blockCut token=
+   let (xs,rest)=span (/= BlankLine) token
+   in xs:blockCut rest                
+dropNewLine::[Token]->[Token]
+dropNewLine []=[]
+dropNewLine (NewLine:xs)=xs
+dropNewLine token=token
 blockParser::[[Token]]->[Block]
 blockParser token=map parser token
 parser::[Token]->Block
-parser (HeadingOne:Space:rest)=Heading (inlineParser rest)
+parser (HeadingOne:Space:rest)=Heading1 (inlineParser rest)
+parser (HeadingTwo:Space:rest)=Heading2 (inlineParser rest)
+parser (HeadingThree:Space:rest)=Heading3 (inlineParser rest)
+parser (HeadingFour:Space:rest)=Heading4 (inlineParser rest)
+parser (HeadingFive:Space:rest)=Heading5 (inlineParser rest)
+parser (HeadingSix:Space:rest)=Heading6 (inlineParser rest)
 parser token=Paragraph (inlineParser token)
 inlineParser::[Token]->[Inline]
 inlineParser []=[]
 inlineParser (Text str:rest)=PlainText str:inlineParser rest
-inlineParser (Strong:Text str:Strong:rest)=StrongText str:inlineParser rest
+inlineParser (Strong:rest) =
+    let (str, remain) = strongParser rest
+    in StrongText str : inlineParser remain
+inlineParser (NewLine:rest)=PlainText "\n":inlineParser rest
 inlineParser (Space:rest)=PlainText " ":inlineParser rest
-inlineParser (_:rest)=inlineParser rest         
+inlineParser (_:rest)=inlineParser rest
+strongParser::[Token]->(String,[Token])
+strongParser []=("",[])
+strongParser (Strong:rest) =
+    ("", rest)
+strongParser (Text str:rest) =
+    let (content, remain) = strongParser rest
+    in (str ++ content, remain)
+strongParser (Space:rest) =
+    let (content, remain) = strongParser rest
+    in (" " ++ content, remain)
+strongParser (NewLine:rest) =
+    let (content, remain) = strongParser rest
+    in ("\n" ++ content, remain)
+strongParser (_:rest) =
+    strongParser rest

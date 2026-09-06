@@ -17,8 +17,11 @@ main=do
         let path=inputdir </> name
         readFile' path 
         ) nameFiles
+    -- print contentFiles    
     let token=map scanToken contentFiles
-        astToken=map blockParser (map blockCut token)
+    -- print token
+    let astToken=map blockParser (map blockCut token)
+    -- print astToken   
     forM_ (zip nameFiles astToken) $ \(name,ast)->
         htmlRender name ast
     putStrLn "编译完成"                
