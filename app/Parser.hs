@@ -49,10 +49,12 @@ inlineParser (Strong:rest) =
     in StrongText str : inlineParser remain
 inlineParser (TripleStars:rest)=
     let (str,remain) = semanticParser rest
-    in TupleText str:inlineParser remain  
-inlineParser (NewLine:rest)=PlainText "\n":inlineParser rest
+    in TupleText str:inlineParser remain
+inlineParser (ImageStart:LeftBracket:Text altstr:RightBracket:LeftParen:Text urlstr:Space:Reference:rest)=
+    let (titlestr,remain)=semanticParser rest
+    in Img altstr urlstr titlestr:inlineParser remain
 inlineParser (Space:rest)=PlainText " ":inlineParser rest
-inlineParser (_:rest)=inlineParser rest
+inlineParser (_:rest)=inlineParser rest      
 semanticParser::[Token]->(String,[Token])
 semanticParser []=("",[])
 semanticParser (Strong:rest) =
@@ -60,7 +62,9 @@ semanticParser (Strong:rest) =
 semanticParser (Italic:rest) =
     ("", rest)
 semanticParser (TripleStars:rest)=
-    ("",rest)        
+    ("",rest)
+semanticParser (Reference:RightParen:rest)=
+    ("",rest)            
 semanticParser (Text str:rest) =
     let (content, remain) = semanticParser rest
     in (str ++ content, remain)

@@ -1,4 +1,5 @@
 module Render where
+import Text.Printf
 import Types    
 import System.FilePath
 outputdir = "./output/"
@@ -20,4 +21,5 @@ renderInline str=case str of
     PlainText token->token
     StrongText token->"<strong>"++token++"</strong>"
     EmText token->"<em>"++token++"</em>"
-    TupleText token->"<strong>"++"<em>"++token++"</em>"++"</strong>"                          
+    TupleText token->"<strong>"++"<em>"++token++"</em>"++"</strong>"
+    Img altstr urlstr titlestr->printf "<img src=\"%s\" alt=\"%s\" title=\"%s\">" urlstr altstr titlestr                          
