@@ -12,10 +12,12 @@ data Token=
     | Text String
     | Space
     | Strong
+    | Italic
+    | TripleStars    
     | NewLine
     | BlankLine
   deriving (Show,Eq)
 data Block =Heading1 [Inline]|Heading2 [Inline]|Heading3 [Inline]|Heading4 [Inline]|Heading5 [Inline]|Heading6 [Inline]|Paragraph [Inline] deriving (Show,Eq)
-data Inline =PlainText String|StrongText String deriving (Show,Eq)
+data Inline =PlainText String|StrongText String|EmText String|TupleText String deriving (Show,Eq)
 data Error = Syntax Error|Lack
 type Html=String 

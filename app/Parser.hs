@@ -41,24 +41,34 @@ parser token=Paragraph (inlineParser token)
 inlineParser::[Token]->[Inline]
 inlineParser []=[]
 inlineParser (Text str:rest)=PlainText str:inlineParser rest
+inlineParser (Italic:rest)=
+    let (str,remain) =semanticParser rest
+    in EmText str : inlineParser remain
 inlineParser (Strong:rest) =
-    let (str, remain) = strongParser rest
+    let (str, remain) = semanticParser rest
     in StrongText str : inlineParser remain
+inlineParser (TripleStars:rest)=
+    let (str,remain) = semanticParser rest
+    in TupleText str:inlineParser remain  
 inlineParser (NewLine:rest)=PlainText "\n":inlineParser rest
 inlineParser (Space:rest)=PlainText " ":inlineParser rest
 inlineParser (_:rest)=inlineParser rest
-strongParser::[Token]->(String,[Token])
-strongParser []=("",[])
-strongParser (Strong:rest) =
+semanticParser::[Token]->(String,[Token])
+semanticParser []=("",[])
+semanticParser (Strong:rest) =
     ("", rest)
-strongParser (Text str:rest) =
-    let (content, remain) = strongParser rest
+semanticParser (Italic:rest) =
+    ("", rest)
+semanticParser (TripleStars:rest)=
+    ("",rest)        
+semanticParser (Text str:rest) =
+    let (content, remain) = semanticParser rest
     in (str ++ content, remain)
-strongParser (Space:rest) =
-    let (content, remain) = strongParser rest
+semanticParser (Space:rest) =
+    let (content, remain) = semanticParser rest
     in (" " ++ content, remain)
-strongParser (NewLine:rest) =
-    let (content, remain) = strongParser rest
+semanticParser (NewLine:rest) =
+    let (content, remain) = semanticParser rest
     in ("\n" ++ content, remain)
-strongParser (_:rest) =
-    strongParser rest
+semanticParser (_:rest) =
+    semanticParser rest

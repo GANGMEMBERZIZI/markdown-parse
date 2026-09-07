@@ -18,4 +18,6 @@ renderBlock block=case block of
 renderInline::Inline->Html
 renderInline str=case str of
     PlainText token->token
-    StrongText token->"<strong>"++token++"</strong>"                         
+    StrongText token->"<strong>"++token++"</strong>"
+    EmText token->"<em>"++token++"</em>"
+    TupleText token->"<strong>"++"<em>"++token++"</em>"++"</strong>"                          
