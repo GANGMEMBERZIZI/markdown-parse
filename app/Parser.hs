@@ -52,7 +52,15 @@ inlineParser (TripleStars:rest)=
     in TupleText str:inlineParser remain
 inlineParser (ImageStart:LeftBracket:Text altstr:RightBracket:LeftParen:Text urlstr:Space:Reference:rest)=
     let (titlestr,remain)=semanticParser rest
-    in Img altstr urlstr titlestr:inlineParser remain
+    in Img altstr urlstr (Just titlestr):inlineParser remain
+inlineParser (ImageStart:LeftBracket:Text altstr:RightBracket:LeftParen:Text urlstr:RightParen:rest)=
+    Img altstr urlstr Nothing:inlineParser rest    
+inlineParser (LeftBracket:Text namestr:RightBracket:LeftParen:Text urlstr:Space:Reference:rest)=
+    let (titlestr,remain)=semanticParser rest
+    in Link namestr urlstr (Just titlestr):inlineParser remain
+inlineParser (LeftBracket:Text namestr:RightBracket:LeftParen:Text urlstr:RightParen:rest)=
+    Link namestr urlstr Nothing:inlineParser rest    
+inlineParser (LeftAngle:Text str:RightAngle:rest)=Email str:inlineParser rest        
 inlineParser (Space:rest)=PlainText " ":inlineParser rest
 inlineParser (_:rest)=inlineParser rest      
 semanticParser::[Token]->(String,[Token])
@@ -64,7 +72,7 @@ semanticParser (Italic:rest) =
 semanticParser (TripleStars:rest)=
     ("",rest)
 semanticParser (Reference:RightParen:rest)=
-    ("",rest)            
+    ("",rest)                
 semanticParser (Text str:rest) =
     let (content, remain) = semanticParser rest
     in (str ++ content, remain)

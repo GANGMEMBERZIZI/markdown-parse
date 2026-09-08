@@ -22,4 +22,8 @@ renderInline str=case str of
     StrongText token->"<strong>"++token++"</strong>"
     EmText token->"<em>"++token++"</em>"
     TupleText token->"<strong>"++"<em>"++token++"</em>"++"</strong>"
-    Img altstr urlstr titlestr->printf "<img src=\"%s\" alt=\"%s\" title=\"%s\">" urlstr altstr titlestr                          
+    Img altstr urlstr (Just titlestr)->printf "<img src=\"%s\" alt=\"%s\" title=\"%s\">" urlstr altstr titlestr
+    Img altstr urlstr Nothing->printf "<img src=\"%s\" alt=\"%s\">" urlstr altstr
+    Link namestr urlstr (Just titlestr)->printf "<a href=\"%s\" title=\"%s\">%s</a>" urlstr titlestr namestr
+    Link namestr urlstr Nothing->printf "<a href=\"%s\">%s</a>" urlstr namestr
+    Email str->if '@' `elem` str then printf "<a href=\"mailto:%s\">%s</a>" str str else printf "<a href=\"%s\">%s</a>" str str                          
