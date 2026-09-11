@@ -4,7 +4,9 @@ import Types
 import System.FilePath
 outputdir = "./output/"
 htmlRender::Name->[Block]->IO()
-htmlRender name token=writeFile (outputdir ++ replaceExtension name ".html") (tokenTranslate token)
+htmlRender name token=writeFile (outputdir ++ replaceExtension name ".html") (htmlStruct name $ tokenTranslate token)
+htmlStruct::FilePath->String->Html
+htmlStruct name token = printf "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>%s</title>\n</head>\n<body>\n%s\n</body>\n</html>" (dropExtension name) token
 tokenTranslate::[Block]->Html
 tokenTranslate token=concatMap renderBlock token
 renderBlock::Block->Html

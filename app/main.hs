@@ -4,7 +4,6 @@ import System.IO.Error
 import Control.Exception
 import System.FilePath
 import GHC.IO.Encoding
-import Data.Typeable (typeOf)
 import Control.Monad (forM_)
 import Types
 import Parser
