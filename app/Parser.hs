@@ -75,12 +75,12 @@ semanticParser (Reference:RightParen:rest)=
     ("",rest)                
 semanticParser (Text str:rest) =
     let (content, remain) = semanticParser rest
-    in (str ++ content, remain)
+    in (str <> content, remain)
 semanticParser (Space:rest) =
     let (content, remain) = semanticParser rest
-    in (" " ++ content, remain)
+    in (" " <> content, remain)
 semanticParser (NewLine:rest) =
     let (content, remain) = semanticParser rest
-    in ("\n" ++ content, remain)
+    in ("\n" <> content, remain)
 semanticParser (_:rest) =
     semanticParser rest

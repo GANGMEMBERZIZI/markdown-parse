@@ -9,11 +9,14 @@ import Types
 import Parser
 import Render
 import Scan
-main=toTry `catch` handler
-toTry=do
+main::IO()
+main=run `catch` handler
+run=do
     setLocaleEncoding utf8
     let inputdir="./input"
-    createDirectoryIfMissing True "input"           
+    let outputdir="./output"
+    createDirectoryIfMissing True inputdir
+    createDirectoryIfMissing True outputdir            
     allFiles<-listDirectory inputdir
     let nameFiles=filter (isExtensionOf ".md") allFiles
     if null nameFiles then putStrLn "input里没文件"
@@ -22,13 +25,9 @@ toTry=do
                 let path=inputdir </> name
                 readFile' path 
                 ) nameFiles    
-            let token=map scanToken contentFiles
-            -- print token
-            let astToken=map blockParser (map blockCut token)
-            -- print astToken
-            createDirectoryIfMissing True "output"  
+            let astToken=map (blockParser . blockCut . scanToken) contentFiles
             forM_ (zip nameFiles astToken) $ \(name,ast)->
-                htmlRender name ast
+                htmlRender outputdir name ast
             putStrLn "编译完成"
 handler::IOError->IO()
 handler e
