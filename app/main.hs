@@ -25,7 +25,7 @@ run=do
                 let path=inputdir </> name
                 readFile' path 
                 ) nameFiles    
-            let astToken=map (blockParser . blockCut . scanToken) contentFiles
+            let astToken=map (runAST . scanToken) contentFiles
             forM_ (zip nameFiles astToken) $ \(name,ast)->
                 htmlRender outputdir name ast
             putStrLn "编译完成"
