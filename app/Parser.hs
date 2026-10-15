@@ -1,4 +1,4 @@
-module Parser where
+module Parser(runAST) where
 import Types
 import Control.Applicative    
 satisfy::(Token->Bool)->Parser Token
@@ -8,9 +8,7 @@ satisfy judge=Parser $ \tokens->case tokens of
 matchToken::Token->Parser Token
 matchToken expected=satisfy (== expected)
 skip::Parser ()
-skip=do
-    _<-matchToken NewLine <|> matchToken BlankLine
-    return () 
+skip=() <$ (matchToken NewLine <|> matchToken BlankLine) 
 parseTextString::Parser String
 parseTextString=do
     t<-satisfy (\tok->case tok of 
@@ -44,9 +42,7 @@ parseTuple=do
     _<-matchToken TripleStars
     return (TupleText str)
 parseText::Parser Inline
-parseText=do
-    str<-parseTextString
-    return (PlainText str)
+parseText=PlainText <$> parseTextString
 parseEmail::Parser Inline                      
 parseEmail=do
     _<-matchToken LeftAngle
@@ -66,8 +62,10 @@ parseLinkOrImg=do
     case isImg of 
         Just _ ->return (Img content url title)
         Nothing ->return (Link content url title)
+parseSpace::Parser Inline
+parseSpace=PlainText " "<$ matchToken Space             
 parseInline :: Parser Inline
-parseInline = parseTuple <|> parseStrong <|> parseEmph <|> parseEmail <|> parseLinkOrImg <|> parseText   
+parseInline = parseTuple <|> parseStrong <|> parseEmph <|> parseEmail <|> parseLinkOrImg <|> parseText <|> parseSpace   
 parseHeading::Parser Block
 parseHeading=do
     hToken<-satisfy (\tok->case tok of 
@@ -83,8 +81,20 @@ parsePara=do
     inlines<-some parseInline
     _<-many skip
     return (Paragraph inlines)
+parseQuote::Parser Block
+parseQuote=do
+    _<-matchToken RightAngle   
+    _<-many (matchToken Space)
+    innerBlock<-optional parseBlock
+    case innerBlock of
+        Just block ->return (BlockQuote [block])
+        Nothing ->BlockQuote [] <$ many skip
+parseBlock::Parser Block
+parseBlock=parseHeading <|> parseQuote <|> parsePara      
 parseToken::Parser [Block]
-parseToken=many (parseHeading <|> parsePara)
+parseToken=do
+    _<-many skip
+    many parseBlock
 runAST::[Token]->[Block]
 runAST tokens=case runParser parseToken tokens of
     Just (ast,_)->ast

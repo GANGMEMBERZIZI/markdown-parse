@@ -16,6 +16,9 @@ renderBlock block=case block of
     Paragraph inlines -> 
         let innerHtml = concatMap renderInline inlines
         in printf "<p>%s</p>\n" innerHtml
+    BlockQuote innerBlock ->
+        let innerHtml= concatMap renderBlock innerBlock
+        in printf "<blockquote>%s</blockquote>\n" innerHtml    
 renderInline :: Inline -> Html
 renderInline inline = case inline of
     PlainText token-> token

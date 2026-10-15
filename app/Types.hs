@@ -21,7 +21,7 @@ data Token=
     | NewLine
     | BlankLine
   deriving (Show,Eq)
-data Block =Head Int [Inline]|Paragraph [Inline] deriving (Show,Eq)
+data Block =Head Int [Inline]|Paragraph [Inline]|BlockQuote [Block] deriving (Show,Eq)
 data Inline =PlainText String|StrongText String|EmText String|TupleText String|Img [Inline] String (Maybe String)|Link [Inline] String (Maybe String)|Email String deriving (Show,Eq)
 newtype Parser a=Parser {runParser::[Token]->Maybe (a, [Token])}
 instance Functor Parser where
